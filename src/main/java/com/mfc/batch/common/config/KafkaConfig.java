@@ -3,15 +3,23 @@ package com.mfc.batch.common.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+
+import com.mfc.batch.batch.dto.CreatePostDto;
 
 @Configuration
 public class KafkaConfig {
@@ -35,25 +43,25 @@ public class KafkaConfig {
 		return new KafkaTemplate<>(producerFactory());
 	}
 
-	// @Bean
-	// public ConsumerFactory<String, PartnerListDto> partnerListConsumerFactory() {
-	// 	Map<String, Object> configs = new HashMap<>();
-	// 	configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
-	// 	configs.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
-	// 	configs.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-	//
-	// 	return new DefaultKafkaConsumerFactory<>(
-	// 			configs,
-	// 			new StringDeserializer(),
-	// 			new JsonDeserializer<>(PartnerListDto.class, false)
-	// 	);
-	// }
-	//
-	// @Bean
-	// ConcurrentKafkaListenerContainerFactory<String, PartnerListDto> partnerListListener() {
-	// 	ConcurrentKafkaListenerContainerFactory<String, PartnerListDto> factory
-	// 			= new ConcurrentKafkaListenerContainerFactory<>();
-	// 	factory.setConsumerFactory(partnerListConsumerFactory());
-	// 	return factory;
-	// }
+	@Bean
+	public ConsumerFactory<String, CreatePostDto> createPostDtoConsumerFactory() {
+		Map<String, Object> configs = new HashMap<>();
+		configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
+		configs.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
+		configs.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+
+		return new DefaultKafkaConsumerFactory<>(
+				configs,
+				new StringDeserializer(),
+				new JsonDeserializer<>(CreatePostDto.class, false)
+		);
+	}
+
+	@Bean
+	ConcurrentKafkaListenerContainerFactory<String, CreatePostDto> createPostDtoListener() {
+		ConcurrentKafkaListenerContainerFactory<String, CreatePostDto> factory
+				= new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(createPostDtoConsumerFactory());
+		return factory;
+	}
 }
