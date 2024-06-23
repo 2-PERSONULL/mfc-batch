@@ -19,7 +19,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-import com.mfc.batch.batch.dto.CreatePostDto;
+import com.mfc.batch.batch.dto.kafka.PostSummaryDto;
 
 @Configuration
 public class KafkaConfig {
@@ -44,7 +44,7 @@ public class KafkaConfig {
 	}
 
 	@Bean
-	public ConsumerFactory<String, CreatePostDto> createPostDtoConsumerFactory() {
+	public ConsumerFactory<String, PostSummaryDto> postSummaryConsumerFactory() {
 		Map<String, Object> configs = new HashMap<>();
 		configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
 		configs.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
@@ -53,15 +53,15 @@ public class KafkaConfig {
 		return new DefaultKafkaConsumerFactory<>(
 				configs,
 				new StringDeserializer(),
-				new JsonDeserializer<>(CreatePostDto.class, false)
+				new JsonDeserializer<>(PostSummaryDto.class, false)
 		);
 	}
 
 	@Bean
-	ConcurrentKafkaListenerContainerFactory<String, CreatePostDto> createPostDtoListener() {
-		ConcurrentKafkaListenerContainerFactory<String, CreatePostDto> factory
+	ConcurrentKafkaListenerContainerFactory<String, PostSummaryDto> postSummaryListener() {
+		ConcurrentKafkaListenerContainerFactory<String, PostSummaryDto> factory
 				= new ConcurrentKafkaListenerContainerFactory<>();
-		factory.setConsumerFactory(createPostDtoConsumerFactory());
+		factory.setConsumerFactory(postSummaryConsumerFactory());
 		return factory;
 	}
 }

@@ -1,14 +1,12 @@
-package com.mfc.batch.batch.dto;
+package com.mfc.batch.batch.dto.kafka;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreatePostDto {
+public class PostSummaryDto {
 	private Long postId;
 }

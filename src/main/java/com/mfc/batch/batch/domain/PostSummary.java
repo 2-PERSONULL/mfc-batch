@@ -22,7 +22,8 @@ public class PostSummary {
 	private Integer bookmarkCnt;
 
 	@Builder
-	public PostSummary(Long postId, Integer bookmarkCnt) {
+	public PostSummary(Long id, Long postId, Integer bookmarkCnt) {
+		this.id = id;
 		this.postId = postId;
 		this.bookmarkCnt = bookmarkCnt;
 	}
