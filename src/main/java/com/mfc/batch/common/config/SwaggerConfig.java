@@ -35,6 +35,7 @@ public class SwaggerConfig {
 
 		return new OpenAPI()
 				.addServersItem(new Server().url("/batch-service"))
+				.addServersItem(new Server().url("/"))
 				.components(new Components()
 						.addSecuritySchemes("Bearer Token", apiKey))
 				.security(Arrays.asList(securityRequirement));
