@@ -1,5 +1,7 @@
 package com.mfc.batch.batch.application;
 
+import static com.mfc.batch.common.response.BaseResponseStatus.*;
+
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -8,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mfc.batch.batch.domain.PostSummary;
 import com.mfc.batch.batch.dto.kafka.PostSummaryDto;
 import com.mfc.batch.batch.infrastructure.PostSummaryRepository;
+import com.mfc.batch.common.exception.BaseException;
+import com.mfc.batch.common.response.BaseResponseStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +37,7 @@ public class KafkaConsumer {
 	@KafkaListener(topics = "create-bookmark", containerFactory = "postSummaryListener")
 	public void createBookmark(PostSummaryDto dto) {
 		PostSummary summary = postSummaryRepository.findByPostId(dto.getPostId())
-				.orElseGet(() -> postSummaryRepository.save(PostSummary.builder()
-						.postId(dto.getPostId())
-						.bookmarkCnt(0)
-						.build()));
+				.orElseThrow(() -> new BaseException(POST_NOT_FOUND));
 
 		String key = POST_PREFIX + dto.getPostId();
 		redisTemplate.opsForValue().increment(key, 1);
@@ -46,10 +47,7 @@ public class KafkaConsumer {
 	@KafkaListener(topics = "delete-bookmark", containerFactory = "postSummaryListener")
 	public void deleteBookmark(PostSummaryDto dto) {
 		PostSummary summary = postSummaryRepository.findByPostId(dto.getPostId())
-				.orElse(postSummaryRepository.save(PostSummary.builder()
-						.postId(dto.getPostId())
-						.bookmarkCnt(0)
-						.build()));
+				.orElseThrow(() -> new BaseException(POST_NOT_FOUND));
 
 		String key = POST_PREFIX + dto.getPostId();
 		redisTemplate.opsForValue().decrement(key, 1);
