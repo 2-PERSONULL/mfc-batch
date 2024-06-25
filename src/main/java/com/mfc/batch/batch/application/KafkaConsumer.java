@@ -29,6 +29,7 @@ public class KafkaConsumer {
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	private static final String POST_PREFIX = "post:like:";
+	private static final String PARTNER_PREFIX = "partner:";
 
 	@KafkaListener(topics = "create-post", containerFactory = "postSummaryListener")
 	public void createPostSummary(PostSummaryDto dto) {
@@ -36,6 +37,19 @@ public class KafkaConsumer {
 				.postId(dto.getPostId())
 				.bookmarkCnt(0)
 				.build());
+
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "postCnt", 1);
+		log.info("postCnt={}", redisTemplate.opsForHash().get(key, "postCnt"));
+	}
+
+	@KafkaListener(topics = "delete-post", containerFactory = "postSummaryListener")
+	public void deletePostSummary(PostSummaryDto dto) {
+		postSummaryRepository.deleteByPostId(dto.getPostId());
+
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "postCnt", -1);
+		log.info("postCnt={}", redisTemplate.opsForHash().get(key, "postCnt"));
 	}
 
 	@KafkaListener(topics = "create-bookmark", containerFactory = "postSummaryListener")

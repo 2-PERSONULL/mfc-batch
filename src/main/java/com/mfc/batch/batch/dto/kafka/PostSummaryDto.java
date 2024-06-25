@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PostSummaryDto {
 	private Long postId;
+	private String partnerId;
 }

@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 @Slf4j
 public class PostJobConfig {
-	private final EntityManagerFactory emf;
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final PostSummaryRepository postSummaryRepository;
 
