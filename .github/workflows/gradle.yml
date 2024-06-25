@@ -67,8 +67,8 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         envs: GITHUB_SHA
         script: |
-          sudo docker stop mfc-member
-          sudo docker rm mfc-membe
+          sudo docker stop mfc-batch
+          sudo docker rm mfc-batch
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/batch
           sudo docker run -d --name mfc-batch --network mfc -P ${{ secrets.DOCKER_USERNAME }}/batch
           sudo docker image prune -f
