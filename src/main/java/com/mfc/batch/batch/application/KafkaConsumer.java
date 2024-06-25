@@ -7,11 +7,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mfc.batch.batch.domain.PartnerSummary;
 import com.mfc.batch.batch.domain.PostSummary;
+import com.mfc.batch.batch.dto.kafka.PartnerSummaryDto;
 import com.mfc.batch.batch.dto.kafka.PostSummaryDto;
+import com.mfc.batch.batch.infrastructure.PartnerSummaryRepository;
 import com.mfc.batch.batch.infrastructure.PostSummaryRepository;
 import com.mfc.batch.common.exception.BaseException;
-import com.mfc.batch.common.response.BaseResponseStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class KafkaConsumer {
 	private final PostSummaryRepository postSummaryRepository;
+	private final PartnerSummaryRepository partnerSummaryRepository;
+
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	private static final String POST_PREFIX = "post:like:";
@@ -52,5 +56,18 @@ public class KafkaConsumer {
 		String key = POST_PREFIX + dto.getPostId();
 		redisTemplate.opsForValue().decrement(key, 1);
 		log.info("like count={}", redisTemplate.opsForValue().get(key));
+	}
+
+	@KafkaListener(topics = "create-partner", containerFactory = "partnerSummaryListener")
+	public void createPartner(PartnerSummaryDto dto) {
+		partnerSummaryRepository.save(
+				PartnerSummary.builder()
+						.partnerId(dto.getPartnerId())
+						.followerCnt(0)
+						.postCnt(0)
+						.coordinateCnt(0)
+						.averageStar(0.0)
+						.build()
+		);
 	}
 }
