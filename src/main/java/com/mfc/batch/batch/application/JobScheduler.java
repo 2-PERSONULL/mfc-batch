@@ -25,7 +25,7 @@ public class JobScheduler {
 	private final JobLauncher jobLauncher;
 	private final Job postBookmarkJob;
 
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */2 * * * *")
 	public void jobSchedule() throws
 			JobInstanceAlreadyCompleteException,
 			JobExecutionAlreadyRunningException,
