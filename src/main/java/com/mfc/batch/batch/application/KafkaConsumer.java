@@ -98,4 +98,11 @@ public class KafkaConsumer {
 		redisTemplate.opsForHash().increment(key, "followCnt", -1);
 		log.info("followCnt={}", redisTemplate.opsForHash().get(key, "followCnt"));
 	}
+
+	@KafkaListener(topics = "close-request", containerFactory = "partnerSummaryListener")
+	public void closeRequest(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "coordinateCnt", 1);
+		log.info("coordinateCnt={}", redisTemplate.opsForHash().get(key, "coordinateCnt"));
+	}
 }
