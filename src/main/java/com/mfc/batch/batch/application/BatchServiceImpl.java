@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mfc.batch.batch.domain.PartnerRanking;
+import com.mfc.batch.batch.domain.PartnerSummary;
 import com.mfc.batch.batch.domain.PostSummary;
 import com.mfc.batch.batch.dto.resp.PartnerRankingRespDto;
 import com.mfc.batch.batch.dto.resp.PartnerSummaryRespDto;
@@ -48,6 +49,19 @@ public class BatchServiceImpl implements BatchService {
 						.map(PartnerSummaryRespDto::new)
 						.toList())
 				.isLast(ranking.isLast())
+				.build();
+	}
+
+	@Override
+	public PartnerSummaryRespDto getPartnerSummary(String uuid) {
+		PartnerSummary summary = partnerSummaryRepository.findByPartnerId(uuid)
+				.orElseThrow(() -> new BaseException(PARTNER_NOT_FOUND));
+
+		return PartnerSummaryRespDto.builder()
+				.partnerId(uuid)
+				.coordinateCnt(summary.getCoordinateCnt())
+				.followerCnt(summary.getFollowerCnt())
+				.averageStar(summary.getAverageStar())
 				.build();
 	}
 }

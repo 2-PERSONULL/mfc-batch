@@ -16,7 +16,8 @@ public enum BaseResponseStatus {
 	SUCCESS(HttpStatus.OK, true, 200, "요청에 성공했습니다."),
 
 	POST_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 포스팅입니다."),
-	PARTNER_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 파트너입니다.");
+	PARTNER_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 파트너입니다."),
+	NO_REQUIRED_HEADER(HttpStatus.BAD_REQUEST, false, 400, "헤더에 UUID 혹은 Role이 존재하지 않습니다.");
 
 
 	private final HttpStatusCode httpStatusCode;
