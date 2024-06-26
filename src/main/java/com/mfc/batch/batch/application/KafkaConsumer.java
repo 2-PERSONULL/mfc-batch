@@ -7,11 +7,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mfc.batch.batch.domain.PartnerSummary;
 import com.mfc.batch.batch.domain.PostSummary;
+import com.mfc.batch.batch.dto.kafka.PartnerSummaryDto;
 import com.mfc.batch.batch.dto.kafka.PostSummaryDto;
+import com.mfc.batch.batch.infrastructure.PartnerSummaryRepository;
 import com.mfc.batch.batch.infrastructure.PostSummaryRepository;
 import com.mfc.batch.common.exception.BaseException;
-import com.mfc.batch.common.response.BaseResponseStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class KafkaConsumer {
 	private final PostSummaryRepository postSummaryRepository;
+	private final PartnerSummaryRepository partnerSummaryRepository;
+
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	private static final String POST_PREFIX = "post:like:";
+	private static final String PARTNER_PREFIX = "partner:";
 
 	@KafkaListener(topics = "create-post", containerFactory = "postSummaryListener")
 	public void createPostSummary(PostSummaryDto dto) {
@@ -32,6 +37,19 @@ public class KafkaConsumer {
 				.postId(dto.getPostId())
 				.bookmarkCnt(0)
 				.build());
+
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "postCnt", 1);
+		log.info("postCnt={}", redisTemplate.opsForHash().get(key, "postCnt"));
+	}
+
+	@KafkaListener(topics = "delete-post", containerFactory = "postSummaryListener")
+	public void deletePostSummary(PostSummaryDto dto) {
+		postSummaryRepository.deleteByPostId(dto.getPostId());
+
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "postCnt", -1);
+		log.info("postCnt={}", redisTemplate.opsForHash().get(key, "postCnt"));
 	}
 
 	@KafkaListener(topics = "create-bookmark", containerFactory = "postSummaryListener")
@@ -52,5 +70,39 @@ public class KafkaConsumer {
 		String key = POST_PREFIX + dto.getPostId();
 		redisTemplate.opsForValue().decrement(key, 1);
 		log.info("like count={}", redisTemplate.opsForValue().get(key));
+	}
+
+	@KafkaListener(topics = "create-partner", containerFactory = "partnerSummaryListener")
+	public void createPartner(PartnerSummaryDto dto) {
+		partnerSummaryRepository.save(
+				PartnerSummary.builder()
+						.partnerId(dto.getPartnerId())
+						.followerCnt(0)
+						.postCnt(0)
+						.coordinateCnt(0)
+						.averageStar(0.0)
+						.build()
+		);
+	}
+
+	@KafkaListener(topics = "create-follow", containerFactory = "partnerSummaryListener")
+	public void createFollow(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "followCnt", 1);
+		log.info("followCnt={}", redisTemplate.opsForHash().get(key, "followCnt"));
+	}
+
+	@KafkaListener(topics = "delete-follow", containerFactory = "partnerSummaryListener")
+	public void deleteFollow(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "followCnt", -1);
+		log.info("followCnt={}", redisTemplate.opsForHash().get(key, "followCnt"));
+	}
+
+	@KafkaListener(topics = "close-request", containerFactory = "partnerSummaryListener")
+	public void closeRequest(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "coordinateCnt", 1);
+		log.info("coordinateCnt={}", redisTemplate.opsForHash().get(key, "coordinateCnt"));
 	}
 }

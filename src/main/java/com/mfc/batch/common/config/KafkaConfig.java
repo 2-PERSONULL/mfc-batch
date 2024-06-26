@@ -19,6 +19,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import com.mfc.batch.batch.dto.kafka.PartnerSummaryDto;
 import com.mfc.batch.batch.dto.kafka.PostSummaryDto;
 
 @Configuration
@@ -62,6 +63,28 @@ public class KafkaConfig {
 		ConcurrentKafkaListenerContainerFactory<String, PostSummaryDto> factory
 				= new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(postSummaryConsumerFactory());
+		return factory;
+	}
+
+	@Bean
+	public ConsumerFactory<String, PartnerSummaryDto> partnerSummaryConsumerFactory() {
+		Map<String, Object> configs = new HashMap<>();
+		configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVER);
+		configs.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
+		configs.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+
+		return new DefaultKafkaConsumerFactory<>(
+				configs,
+				new StringDeserializer(),
+				new JsonDeserializer<>(PartnerSummaryDto.class, false)
+		);
+	}
+
+	@Bean
+	ConcurrentKafkaListenerContainerFactory<String, PartnerSummaryDto> partnerSummaryListener() {
+		ConcurrentKafkaListenerContainerFactory<String, PartnerSummaryDto> factory
+				= new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(partnerSummaryConsumerFactory());
 		return factory;
 	}
 }

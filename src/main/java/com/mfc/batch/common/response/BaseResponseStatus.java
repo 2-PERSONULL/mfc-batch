@@ -15,7 +15,8 @@ public enum BaseResponseStatus {
 	 **/
 	SUCCESS(HttpStatus.OK, true, 200, "요청에 성공했습니다."),
 
-	POST_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 포스팅입니다.");
+	POST_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 포스팅입니다."),
+	PARTNER_NOT_FOUND(HttpStatus.NOT_FOUND, false, 404, "존재하지 않는 파트너입니다.");
 
 
 	private final HttpStatusCode httpStatusCode;

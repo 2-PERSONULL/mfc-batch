@@ -17,12 +17,10 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.Cursor;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.mfc.batch.batch.domain.PartnerSummary;
 import com.mfc.batch.batch.domain.PostSummary;
@@ -31,48 +29,56 @@ import com.mfc.batch.batch.infrastructure.PostSummaryRepository;
 import com.mfc.batch.common.exception.BaseException;
 import com.mfc.batch.common.response.BaseResponseStatus;
 
-import jakarta.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @RequiredArgsConstructor
 @Transactional
-public class PostJobConfig {
+public class PartnerJobConfig {
 	private final RedisTemplate<String, Object> redisTemplate;
-	private final PostSummaryRepository postSummaryRepository;
+	private final PartnerSummaryRepository partnerSummaryRepository;
 
-	@Bean(name = "postSummaryJob")
-	public Job postSummaryJob(JobRepository jobRepository, PlatformTransactionManager txm) {
-		return new JobBuilder("postSummaryJob", jobRepository)
-				.start(postSummaryStep(jobRepository, txm))
+	@Bean(name = "partnerSummaryJob")
+	public Job partnerSummaryJob(JobRepository jobRepository, PlatformTransactionManager txm) {
+		return new JobBuilder("bookmark-cnt-job", jobRepository)
+				.start(partnerSummaryStep(jobRepository, txm))
 				.build();
 	}
 
-	@Bean(name = "postSummaryStep")
-	public Step postSummaryStep(JobRepository jobRepository, PlatformTransactionManager txm) {
-		return new StepBuilder("postSummaryStep", jobRepository)
-				.tasklet(postSummaryTasklet(), txm)
+	@Bean(name = "partnerSummaryStep")
+	public Step partnerSummaryStep(JobRepository jobRepository, PlatformTransactionManager txm) {
+		return new StepBuilder("bookmark-cnt-step", jobRepository)
+				.tasklet(partnerSummaryTasklet(), txm)
 				.allowStartIfComplete(true)
 				.build();
 	}
 
-	@Bean(name = "postSummaryTasklet")
-	public Tasklet postSummaryTasklet() {
+	@Bean(name = "partnerSummaryTasklet")
+	public Tasklet partnerSummaryTasklet() {
 		return (contribution, chunkContext) -> {
-			Set<String> keys = scanKeys("post:like:*");
+			Set<String> keys = scanKeys("partner:*");
 
 			for (String key : keys) {
-				Long postId = Long.valueOf(key.replace("post:like:", ""));
-				Integer bookmarkCnt = Integer.valueOf(String.valueOf(redisTemplate.opsForValue().get(key)));
+				String partnerId = key.replace("partner:", "");
 
-				PostSummary summary = postSummaryRepository.findByPostId(postId)
-						.orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
+				Object post = redisTemplate.opsForHash().get(key, "postCnt");
+				Object follower = redisTemplate.opsForHash().get(key, "followCnt");
+				Object coordinate = redisTemplate.opsForHash().get(key, "coordinateCnt");
 
-				postSummaryRepository.save(PostSummary.builder()
+				Integer postCnt = post == null ? 0 :Integer.parseInt(String.valueOf(post));
+				Integer followerCnt = follower == null ? 0 : Integer.parseInt(String.valueOf(follower));
+				Integer coordinateCnt = coordinate == null ? 0 : Integer.parseInt(String.valueOf(coordinate)) ;
+
+				PartnerSummary summary = partnerSummaryRepository.findByPartnerId(partnerId)
+						.orElseThrow(() -> new BaseException(PARTNER_NOT_FOUND));
+
+				partnerSummaryRepository.save(PartnerSummary.builder()
 						.id(summary.getId())
-						.postId(postId)
-						.bookmarkCnt(summary.getBookmarkCnt() + bookmarkCnt)
+						.partnerId(partnerId)
+						.postCnt(summary.getPostCnt() + postCnt)
+						.followerCnt(summary.getFollowerCnt() + followerCnt)
+						.coordinateCnt(summary.getCoordinateCnt() + coordinateCnt)
+						.averageStar(summary.getAverageStar())
 						.build());
 
 				redisTemplate.delete(key);

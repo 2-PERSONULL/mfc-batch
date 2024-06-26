@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostSummaryDto {
-	private Long postId;
+public class PartnerSummaryDto {
 	private String partnerId;
 }
