@@ -28,7 +28,7 @@ public class JobScheduler {
 		this.partnerSummaryJob = partnerJobConfig;
 	}
 
-	@Scheduled(cron = "0 */2 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void postJobSchedule() throws Exception {
 
 		JobParameters jobParameters = new JobParametersBuilder()
@@ -38,7 +38,7 @@ public class JobScheduler {
 		JobExecution postJob = jobLauncher.run(postSummaryJob, jobParameters);
 	}
 
-	@Scheduled(cron = "0 */2 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void partnerJobSchedule() throws Exception {
 
 		JobParameters jobParameters = new JobParametersBuilder()
