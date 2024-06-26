@@ -84,4 +84,18 @@ public class KafkaConsumer {
 						.build()
 		);
 	}
+
+	@KafkaListener(topics = "create-follow", containerFactory = "partnerSummaryListener")
+	public void createFollow(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "followCnt", 1);
+		log.info("followCnt={}", redisTemplate.opsForHash().get(key, "followCnt"));
+	}
+
+	@KafkaListener(topics = "delete-follow", containerFactory = "partnerSummaryListener")
+	public void deleteFollow(PartnerSummaryDto dto) {
+		String key = PARTNER_PREFIX + dto.getPartnerId();
+		redisTemplate.opsForHash().increment(key, "followCnt", -1);
+		log.info("followCnt={}", redisTemplate.opsForHash().get(key, "followCnt"));
+	}
 }
