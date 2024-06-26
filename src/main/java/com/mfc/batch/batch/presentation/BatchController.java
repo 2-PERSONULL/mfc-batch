@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mfc.batch.batch.application.BatchService;
+import com.mfc.batch.batch.vo.resp.PartnerRankingRespVo;
 import com.mfc.batch.batch.vo.resp.PostSummaryRespVo;
 import com.mfc.batch.common.response.BaseResponse;
 
@@ -27,5 +28,12 @@ public class BatchController {
 	public BaseResponse<PostSummaryRespVo> getBookmarkCnt(@PathVariable Long postId) {
 		return new BaseResponse<>(modelMapper.map(
 				batchService.getBookmarkCnt(postId), PostSummaryRespVo.class));
+	}
+
+	@GetMapping("/ranking")
+	@Operation(summary = "파트너 랭킹 목록 조회 API", description = "파트너 랭킹 목록 조회 (id + 기준값)")
+	public BaseResponse<PartnerRankingRespVo> getPartnerRanking() {
+		return new BaseResponse<>(modelMapper.map(
+				batchService.getPartnerRanking(), PartnerRankingRespVo.class));
 	}
 }
