@@ -2,10 +2,13 @@ package com.mfc.batch.batch.application;
 
 import static com.mfc.batch.common.response.BaseResponseStatus.*;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mfc.batch.batch.domain.PartnerRanking;
 import com.mfc.batch.batch.domain.PostSummary;
 import com.mfc.batch.batch.dto.resp.PartnerRankingRespDto;
 import com.mfc.batch.batch.dto.resp.PartnerSummaryRespDto;
@@ -38,10 +41,13 @@ public class BatchServiceImpl implements BatchService {
 
 	@Override
 	public PartnerRankingRespDto getPartnerRanking(Pageable page) {
+		Slice<PartnerRanking> ranking = partnerRankingRepository.findAll(page);
+
 		return PartnerRankingRespDto.builder()
-				.partners(partnerRankingRepository.findAll(page).stream()
+				.partners(ranking.getContent().stream()
 						.map(PartnerSummaryRespDto::new)
 						.toList())
+				.isLast(ranking.isLast())
 				.build();
 	}
 }

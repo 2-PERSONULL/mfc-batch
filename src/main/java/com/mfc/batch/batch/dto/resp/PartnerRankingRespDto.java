@@ -9,4 +9,5 @@ import lombok.Getter;
 @Builder
 public class PartnerRankingRespDto {
 	private List<PartnerSummaryRespDto> partners;
+	private Boolean isLast;
 }
