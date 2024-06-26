@@ -2,7 +2,7 @@ package com.mfc.batch.batch.application;
 
 import static com.mfc.batch.common.response.BaseResponseStatus.*;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +37,9 @@ public class BatchServiceImpl implements BatchService {
 	}
 
 	@Override
-	public PartnerRankingRespDto getPartnerRanking() {
+	public PartnerRankingRespDto getPartnerRanking(Pageable page) {
 		return PartnerRankingRespDto.builder()
-				.partners(partnerRankingRepository.findAll().stream()
+				.partners(partnerRankingRepository.findAll(page).stream()
 						.map(PartnerSummaryRespDto::new)
 						.toList())
 				.build();

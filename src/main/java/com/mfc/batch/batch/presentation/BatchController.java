@@ -1,6 +1,7 @@
 package com.mfc.batch.batch.presentation;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +33,8 @@ public class BatchController {
 
 	@GetMapping("/ranking")
 	@Operation(summary = "파트너 랭킹 목록 조회 API", description = "파트너 랭킹 목록 조회 (id + 기준값)")
-	public BaseResponse<PartnerRankingRespVo> getPartnerRanking() {
+	public BaseResponse<PartnerRankingRespVo> getPartnerRanking(Pageable page) {
 		return new BaseResponse<>(modelMapper.map(
-				batchService.getPartnerRanking(), PartnerRankingRespVo.class));
+				batchService.getPartnerRanking(page), PartnerRankingRespVo.class));
 	}
 }
