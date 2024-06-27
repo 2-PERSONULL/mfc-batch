@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.mfc.batch.batch.domain.PostSummary;
 
-public interface PostSummaryRepository extends JpaRepository<PostSummary, Long> {
+public interface PostSummaryRepository extends JpaRepository<PostSummary, Long>, CustomRepository {
 	Optional<PostSummary> findByPostId(Long postId);
 
 	@Modifying

@@ -4,8 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class PostBookmarkDto {
 	private Long postId;
+	private String partnerId;
 	private Integer bookmarkCnt;
+
+	public PostBookmarkDto(Long postId, Integer bookmarkCnt) {
+		this.postId = postId;
+		this.bookmarkCnt = bookmarkCnt;
+	}
 }

@@ -2,6 +2,8 @@ package com.mfc.batch.batch.presentation;
 
 import static com.mfc.batch.common.response.BaseResponseStatus.*;
 
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
@@ -9,15 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mfc.batch.batch.application.BatchService;
 import com.mfc.batch.batch.vo.resp.PartnerRankingRespVo;
 import com.mfc.batch.batch.vo.resp.PartnerSummaryRespVo;
+import com.mfc.batch.batch.vo.resp.PostListRespVo;
 import com.mfc.batch.batch.vo.resp.PostSummaryRespVo;
 import com.mfc.batch.common.exception.BaseException;
 import com.mfc.batch.common.response.BaseResponse;
-import com.mfc.batch.common.response.BaseResponseStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -52,6 +55,13 @@ public class BatchController {
 		checkUuid(partnerId);
 		return new BaseResponse<>(modelMapper.map(
 				batchService.getPartnerSummary(partnerId), PartnerSummaryRespVo.class));
+	}
+
+	@GetMapping("/explore")
+	@Operation(summary = "포스팅 좋아요 순 정렬 조회 API", description = "좋아요 순 정렬 + 카테고리 필터링")
+	public BaseResponse<PostListRespVo> getPosts(Pageable page, @RequestParam(required = false) List<String> partners) {
+		return new BaseResponse<>(modelMapper.map(
+				batchService.getPostList(page, partners), PostListRespVo.class));
 	}
 
 	private void checkUuid(String uuid) throws BaseException {

@@ -35,6 +35,7 @@ public class KafkaConsumer {
 	public void createPostSummary(PostSummaryDto dto) {
 		postSummaryRepository.save(PostSummary.builder()
 				.postId(dto.getPostId())
+				.partnerId(dto.getPartnerId())
 				.bookmarkCnt(0)
 				.build());
 

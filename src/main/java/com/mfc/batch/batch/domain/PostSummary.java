@@ -18,13 +18,16 @@ public class PostSummary {
 	private Long id;
 	@Column(nullable = false, updatable = false)
 	private Long postId;
+	@Column
+	private String partnerId;
 	@Column(nullable = false)
 	private Integer bookmarkCnt;
 
 	@Builder
-	public PostSummary(Long id, Long postId, Integer bookmarkCnt) {
+	public PostSummary(Long id, Long postId, String partnerId, Integer bookmarkCnt) {
 		this.id = id;
 		this.postId = postId;
+		this.partnerId = partnerId;
 		this.bookmarkCnt = bookmarkCnt;
 	}
 }
