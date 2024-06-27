@@ -44,7 +44,7 @@ public class BatchServiceImpl implements BatchService {
 
 	@Override
 	public PartnerRankingRespDto getPartnerRanking() {
-		List<PartnerRanking> ranking = partnerRankingRepository.findAll();
+		List<PartnerRanking> ranking = partnerRankingRepository.findOrderByRanking();
 
 		return PartnerRankingRespDto.builder()
 				.partners(ranking.stream()
