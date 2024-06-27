@@ -8,6 +8,6 @@ import com.mfc.batch.batch.dto.resp.PostSummaryRespDto;
 
 public interface BatchService {
 	PostSummaryRespDto getBookmarkCnt(Long postId);
-	PartnerRankingRespDto getPartnerRanking(Pageable page);
+	PartnerRankingRespDto getPartnerRanking();
 	PartnerSummaryRespDto getPartnerSummary(String uuid);
 }

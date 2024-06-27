@@ -2,6 +2,8 @@ package com.mfc.batch.batch.application;
 
 import static com.mfc.batch.common.response.BaseResponseStatus.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -41,14 +43,13 @@ public class BatchServiceImpl implements BatchService {
 	}
 
 	@Override
-	public PartnerRankingRespDto getPartnerRanking(Pageable page) {
-		Slice<PartnerRanking> ranking = partnerRankingRepository.findAll(page);
+	public PartnerRankingRespDto getPartnerRanking() {
+		List<PartnerRanking> ranking = partnerRankingRepository.findAll();
 
 		return PartnerRankingRespDto.builder()
-				.partners(ranking.getContent().stream()
+				.partners(ranking.stream()
 						.map(PartnerSummaryRespDto::new)
 						.toList())
-				.isLast(ranking.isLast())
 				.build();
 	}
 

@@ -7,5 +7,4 @@ import lombok.Getter;
 @Getter
 public class PartnerRankingRespVo {
 	private List<PartnerSummaryRespVo> partners;
-	private Boolean isLast;
 }

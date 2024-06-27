@@ -40,9 +40,9 @@ public class BatchController {
 
 	@GetMapping("/ranking")
 	@Operation(summary = "파트너 랭킹 목록 조회 API", description = "파트너 랭킹 목록 조회 (id + 기준값)")
-	public BaseResponse<PartnerRankingRespVo> getPartnerRanking(Pageable page) {
+	public BaseResponse<PartnerRankingRespVo> getPartnerRanking() {
 		return new BaseResponse<>(modelMapper.map(
-				batchService.getPartnerRanking(page), PartnerRankingRespVo.class));
+				batchService.getPartnerRanking(), PartnerRankingRespVo.class));
 	}
 
 	@GetMapping("/partners/summary")
