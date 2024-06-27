@@ -15,6 +15,7 @@ import com.mfc.batch.batch.domain.PartnerSummary;
 import com.mfc.batch.batch.domain.PostSummary;
 import com.mfc.batch.batch.dto.resp.PartnerRankingRespDto;
 import com.mfc.batch.batch.dto.resp.PartnerSummaryRespDto;
+import com.mfc.batch.batch.dto.resp.PostListRespDto;
 import com.mfc.batch.batch.dto.resp.PostSummaryRespDto;
 import com.mfc.batch.batch.infrastructure.PartnerRankingRepository;
 import com.mfc.batch.batch.infrastructure.PartnerSummaryRepository;
@@ -63,6 +64,15 @@ public class BatchServiceImpl implements BatchService {
 				.coordinateCnt(summary.getCoordinateCnt())
 				.followerCnt(summary.getFollowerCnt())
 				.averageStar(summary.getAverageStar())
+				.build();
+	}
+
+	@Override
+	public PostListRespDto getPostList(Pageable page, List<String> partners) {
+		Slice<Long> posts = postSummaryRepository.getPostList(page, partners);
+		return PostListRespDto.builder()
+				.posts(posts.getContent())
+				.isLast(posts.isLast())
 				.build();
 	}
 }
