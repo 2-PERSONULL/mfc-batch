@@ -97,7 +97,7 @@ public class PartnerJobConfig {
 	public ItemProcessor<PartnerProfileDto, PartnerSummary> partnerSummaryProcessor() {
 		return dto -> {
 			PartnerSummary summary = partnerSummaryRepository.findByPartnerId(dto.getPartnerId())
-					.orElseThrow(() -> new BaseException(BaseResponseStatus.POST_NOT_FOUND));
+					.orElseThrow(() -> new BaseException(BaseResponseStatus.PARTNER_NOT_FOUND));
 
 			return PartnerSummary.builder()
 						.id(summary.getId())
